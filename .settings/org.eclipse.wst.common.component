@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="CaaSHybrid">
+        <wb-resource deploy-path="/" source-path="/apps/CaaSHybrid/common"/>
+        <wb-resource deploy-path="/" source-path="/adapters/CaaS/src"/>
+        <property name="context-root" value="CaaSHybrid"/>
+    </wb-module>
+</project-modules>

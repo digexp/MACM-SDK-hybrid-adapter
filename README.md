@@ -1,5 +1,3 @@
-# MACM-SDK-hybrid-adapter
-
 **Accessing Java adapter from client**
 
 * Hybrid (JavaScript) client 
@@ -50,5 +48,3 @@ if (error != nil) {
 }];
 ```
 
-
-More details: http://www-01.ibm.com/support/knowledgecenter/SSHS8R_7.0.0/com.ibm.worklight.dev.doc/devref/c_adapters_endpoint.html?lang=pt-br
