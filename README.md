@@ -1,0 +1,1 @@
+# MACM-SDK-hybrid-adapter
