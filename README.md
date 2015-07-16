@@ -36,20 +36,7 @@ ibm.macm.serverurl=https://mymacm.myserver:100039
 
 The MACM's adapter (CaaS.adapter) must be deployed on the MFP server and this can be done from the MobileFirst Operations Console.
 
-
 ## Getting started
-### Authentication
-
-Authentication with the remote server can be done in two ways:
-#### Authentication with the credentials of the application
-
-The username and password are hardcoded in the application and the following constructor should be used:
-
-```java
-// create a service instance with application credentials
-CAASService service = new CAASService("http://www.myhost.com:10039", "MyContextRoot", "MyTenant", "username", "password");
-```
-
 
 ### Accessing the adapter from a mobile client
 #### Hybrid (JavaScript) client
