@@ -2,6 +2,7 @@
 
 The MACM adapter is an IBM MobileFirst Platform Foundation 7.0 application to retrieve content from a MACM server.
 
+ 
 
 ### Table Of Contents
 
@@ -14,14 +15,20 @@ The MACM adapter is an IBM MobileFirst Platform Foundation 7.0 application to re
         1. [Hybrid (JavaScript) client](#hybrid-javascript-client)
         2. [Native Android client](#native-android-client)
         3. [Native iOS client](#native-ios-client)
+    2. [Retrieving Content](#retrieving-content)
+        1. [List of content items by path](#querying-a-list-of-content-items-by-path)
+        2. [List of content items by id](#querying-a-list-of-content-items-by-id)
+        3. [Single content item by id](#querying-a-single-content-item-by-id)
+        4. [Single content item by path](#querying-a-single-content-item-by-path)
+        5. [Querying an asset (image) by its url](#querying-an-asset-image-by-its-url)
 
 ## Installation
 
 ### Configuration
 
 To work with your MACM instance, you must use the worklight.properties file to specify the configuration parameters (Credentials and MACM Server URL) needed to access to the MACM
-application server. This file is in the server/conf folder in your MFP project. To configure the URL of a service MACM, you need to create a properties named **ibm.macm.serverurl**. This property should contains the MACM
-instance URL (Example: https://mymacm.myserver:100039). You also need to specify credentials throughout two new (custom) properties, **ibm.macm.username** and **ibm.macm.password**.
+application server. This file is in the server/conf folder in your MFP project. To configure the URL of a service MACM, you need to create a properties named **ibm.macm.serverurl**. This property should contains the MACM
+instance URL (Example: https://mymacm.myserver:100039). You also need to specify credentials throughout two new (custom) properties, **ibm.macm.username** and **ibm.macm.password**.
 
 ```
 ###############################################################
@@ -93,7 +100,7 @@ public void onFailure(WLFailResponse response) {
 ```
 
 
-### Native iOS client
+#### Native iOS client
 
 ```objective-c
 //Define the URI of the resource.
@@ -124,16 +131,80 @@ resultText = [resultText stringByAppendingString:response.responseText];
 ```
 
 
-#### Querying a single content item by path
+### Retrieving content
+#### Querying a list of content items by path
 
-```java
-// create the service that connects to the MACM instance
-CAASService service = new CAASService("http://www.myhost.com:10039", "MyContextRoot", "MyTenant", "username", "password");
-CAASDataCallback<CAASContentItem> callback = ...;
-// create the request
-CAASContentItemRequest request = new CAASContentItemRequest(callback);
-request.setPath("MACM/some/content item path");
-// execute the request
-CAASRequestResult<CAASContentItem> result = service.executeRequest(request);
+```javascript
+/*Constructs a new resource request with the specified URL,
+using the specified HTTP method.*/
+var request = new WLResourceRequest("adapters/CaaS/items", WLResourceRequest.GET);
+//Sets the values of the given query parameter name to the given value.
+request.setQueryParameter("type", "Offer");
+request.setQueryParameter("lib", "MACM Default Application");
+request.setQueryParameter("element", "price,image,summary");
+//Send this resource request asynchronously
+request.send().then(
+function(response) {
+// success flow, the result can be found in response.responseJSON
+//Print response's payload
+alert(JSON.stringify(response));
+// Show details of the first item
+alert(JSON.parse(response.responseJSON).items[0].title);
+alert(JSON.parse(response.responseJSON).items[0].summary);
+alert(JSON.parse(response.responseJSON).items[0].properties.summary);
+alert(JSON.parse(response.responseJSON).items[0].properties.image);
+alert(JSON.parse(response.responseJSON).items[0].properties.price);
+},
+function(error) {
+// failure flow
+// the error code and description can be found in error.errorCode and error.errorMsg fields alert(JSON.stringify(error));
+}
+);
+```
+#### Querying a list of content items by id
+
+```javascript
+var request = new WLResourceRequest(adapters/CaaS/items", WLResourceRequest.GET);
+request.setQueryParameter("oid", id);
+request.send().then(
+function(response) {
+alert(JSON.stringify(response));
+var itemsList = JSON.parse(response.responseJSON);
+},
+function(error) {
+alert(JSON.stringify(error));
+}
+);
+```
+
+#### Querying a single content item by id
+
+```javascript
+var request = new WLResourceRequest(adapters/CaaS/mypoc/item", WLResourceRequest.GET);
+request.setQueryParameter("oid", id);
+request.send().then(
+function(response) {
+var offer = JSON.parse(response.responseText);
+
+// Display the offer data in the response.
+alert(offer.item[0].properties.Body);
+alert(offer.item[0].keywords);
+alert(offer.item[0].lastmodifieddate);
+alert(offer.item[0].properties.Price);
+
+},
+function(error) {
+alert(JSON.stringify(error));
+}
+);
+```
+
+
+### Querying an asset (image) by its url
+
+```
+GET adapters/CaaS/asset?assetURL=<image-Url>;
+
+https://mymacm.myserver:100039/DXBanking/adapters/CaaS/asset?assetURL=/wps/wcm/myconnect/cf78b16b5/auto.jpg?MOD=AJPERES
 ```
 
