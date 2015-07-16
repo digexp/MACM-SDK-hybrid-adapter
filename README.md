@@ -27,8 +27,8 @@ The MACM adapter is an IBM MobileFirst Platform Foundation 7.0 application to re
 ### Configuration
 
 To work with your MACM instance, you must use the worklight.properties file to specify the configuration parameters (Credentials and MACM Server URL) needed to access to the MACM
-application server. This file is in the server/conf folder in your MFP project. To configure the URL of a service MACM, you need to create a properties named **ibm.macm.serverurl**. This property should contains the MACM
-instance URL (Example: https://mymacm.myserver:100039). You also need to specify credentials throughout two new (custom) properties, **ibm.macm.username** and **ibm.macm.password**.
+application server. This file is in the server/conf folder in your MFP project. To configure the URL of a service MACM, you need to create a properties named **ibm.macm.serverurl**. This property should contains the MACM
+instance URL (Example: https://mymacm.myserver:100039). You also need to specify credentials throughout two new (custom) properties, **ibm.macm.username** and **ibm.macm.password**.
 
 ```
 ###############################################################
