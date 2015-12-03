@@ -260,4 +260,4 @@ try {
 ...
 ```
 
-**Warning: In order to ease the adapter use, the certificate validation has been disabled but you have to be aware of what using this workaround means. The drawbacks switching off the certificate validation and host verification for SSL implied that you will be not preventing man in the middle attacks or not be sure that you are connected to the host you think you are. **
+**_Warning: In order to ease the adapter use, the certificate validation has been disabled but you have to be aware of what using this workaround means. The drawbacks switching off the certificate validation and host verification for SSL implied that you will be not preventing man in the middle attacks or not be sure that you are connected to the host you think you are._**
