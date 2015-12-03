@@ -25,6 +25,7 @@ The MACM adapter is an IBM MobileFirst Platform Foundation 7.0 application to re
 	1. [HTTPS connections](#allowing-certificates-with-https-connections)
 		1. [Add Certificate on Java KeyStore](add-certificate-on-java-keystore)
 		2. [Turn off certificate validation in HTTPS connections](#turn-off-certificates-with-https-connections)
+		
 ## Installation
 
 ### Configuration
@@ -221,18 +222,21 @@ If the server's certificate chain has not previously been installed in the trust
 #### Add Certificate on Java KeyStore
 
 You should update the CACERT file in your **JRE_HOME/lib/security** directory :
-1.	Hit the URL in your browser, retrieve the certificate in the browser's option and then export it.
-2.	Go to your **JRE_HOME/bin** or **JDKxx/JRE/bin** and execute following keytool command to insert certificate into trusted keystore
+
+1. Hit the URL in your browser, retrieve the certificate in the browser's option and then export it.
+2. Go to your **JRE_HOME/bin** or **JDKxx/JRE/bin** and execute following keytool command to insert certificate into trusted keystore.
 
 ```
 keytool -keystore ..\lib\security\cacerts -import -alias yourSSLServerName -file .\relative-path-to-cert-file\yourSSLServerName.crt
 ```
-3.  Verify that the certificate was added to the truststore
+
+3. Verify that the certificate was added to the truststore.
+
 ```
 keytool -list -keystore ..\lib\security\cacerts
 ```
 
-*default password of keystore is "Changeit"*
+*default password of keystore is* "__Changeit__".
 
 #### Turn off certificates with https connections
 
@@ -256,4 +260,4 @@ try {
 ...
 ```
 
-**Warning:** *** In order to ease the adapter use, the certificate validation has been disabled but you have to be aware of what using this workaround means. The drawbacks switching off the certificate validation and host verification for SSL implied that you will be not preventing man in the middle attacks or not be sure that you are connected to the host you think you are. *** 
+**Warning: In order to ease the adapter use, the certificate validation has been disabled but you have to be aware of what using this workaround means. The drawbacks switching off the certificate validation and host verification for SSL implied that you will be not preventing man in the middle attacks or not be sure that you are connected to the host you think you are. **
