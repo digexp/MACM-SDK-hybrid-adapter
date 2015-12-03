@@ -21,7 +21,10 @@ The MACM adapter is an IBM MobileFirst Platform Foundation 7.0 application to re
         3. [Single content item by id](#querying-a-single-content-item-by-id)
         4. [Single content item by path](#querying-a-single-content-item-by-path)
         5. [Querying an asset (image) by its url](#querying-an-asset-image-by-its-url)
-
+3. [Miscellaneous](#miscellaneous)
+	1. [HTTPS connections](#allowing-certificates-with-https-connections)
+		1. [Add Certificate on Java KeyStore](add-certificate-on-java-keystore)
+		2. [Turn off certificate validation in HTTPS connections](#turn-off-certificates-with-https-connections)
 ## Installation
 
 ### Configuration
@@ -208,3 +211,49 @@ GET adapters/CaaS/asset?assetURL=<image-Url>;
 https://mymacm.myserver:100039/DXBanking/adapters/CaaS/asset?assetURL=/wps/wcm/myconnect/cf78b16b5/auto.jpg?MOD=AJPERES
 ```
 
+## Miscellaneous
+
+### Allowing certificates with HTTPS connections
+
+By default, Java adapters only allows trusted certificates whose certificate authority is in its trusted list.
+If the server's certificate chain has not previously been installed in the truststore before accessing an HTTPS URL, an exception is raised. 
+
+#### Add Certificate on Java KeyStore
+
+You should update the CACERT file in your **JRE_HOME/lib/security** directory :
+1.	Hit the URL in your browser, retrieve the certificate in the browser's option and then export it.
+2.	Go to your **JRE_HOME/bin** or **JDKxx/JRE/bin** and execute following keytool command to insert certificate into trusted keystore
+
+```
+keytool -keystore ..\lib\security\cacerts -import -alias yourSSLServerName -file .\relative-path-to-cert-file\yourSSLServerName.crt
+```
+3.  Verify that the certificate was added to the truststore
+```
+keytool -list -keystore ..\lib\security\cacerts
+```
+
+*default password of keystore is "Changeit"*
+
+#### Turn off certificates with https connections
+
+If you want to turn off certificate validation and have access to an HTTPS URL without having the certificate installed in the truststore, you need to override the default SSL manager and the default SSL hostname verifier.
+This can be done by adding the following code before to open the connection stream:
+
+```java
+// Override SSL Trust manager without certificate chains validation
+TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager(){
+    public X509Certificate[] getAcceptedIssuers(){return null;}
+    public void checkClientTrusted(X509Certificate[] certs, String authType){}
+    public void checkServerTrusted(X509Certificate[] certs, String authType){}
+}};
+
+// Initializes this context with all-trusting host verifier.
+try {
+    SSLContext sc = SSLContext.getInstance("SSL");
+    sc.init(null, trustAllCerts, new SecureRandom());
+    HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+} catch (Exception e) {;}
+...
+```
+
+**Warning:** *** In order to ease the adapter use, the certificate validation has been disabled but you have to be aware of what using this workaround means. The drawbacks switching off the certificate validation and host verification for SSL implied that you will be not preventing man in the middle attacks or not be sure that you are connected to the host you think you are. *** 

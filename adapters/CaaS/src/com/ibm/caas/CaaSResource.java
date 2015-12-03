@@ -29,6 +29,9 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -36,6 +39,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -91,6 +100,58 @@ public class CaaSResource {
 						.getBytes()));
 		SERVER = WLServerAPIProvider.getWLServerAPI().getConfigurationAPI()
 				.getMFPConfigurationProperty("ibm.macm.serverurl");
+		
+if(SERVER.startsWith("https")){
+			relaxHostChecking();
+		}
+	}
+	
+	 /**
+	  * Pass throughout CERTs [workaround]
+	  */
+	public void relaxHostChecking(){
+
+		// Override SSL Trust manager without certificate chains validation
+	    TrustManager[] trustAllCerts = new TrustManager[] {
+	       new X509TrustManager() {
+	          public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+	            return null;
+	          }
+
+	          public void checkClientTrusted(X509Certificate[] certs, String authType) { }
+
+	          public void checkServerTrusted(X509Certificate[] certs, String authType) { }
+
+	       }
+	    };
+
+		try {
+			SSLContext sc = SSLContext.getInstance("SSL");
+		    sc.init(null, trustAllCerts, new java.security.SecureRandom());
+		    HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+		    // Hostname verification. 
+		    HostnameVerifier allHostsValid = new HostnameVerifier() {
+		    	/**
+		    	 * Verify that the host name is an acceptable match with the server's authentication scheme.
+		    	 * @hostname - the host name
+		    	 * @session - SSLSession used on the connection to host
+		    	 * @return true if the host name is acceptable
+		    	 */
+		        public boolean verify(String hostname, SSLSession session) {
+		          return true;
+		        }
+		    };
+		   // Sets the default HostnameVerifier by all-trusting host verifier.
+		    HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+		    
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (KeyManagementException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -103,6 +164,7 @@ public class CaaSResource {
 		logger.info(this.getClass().getSimpleName()
 				+ " Connect to MACM INSTANCE / Basic Auth...");
 		init();
+				
 		try {
 
 			URL url = null;
